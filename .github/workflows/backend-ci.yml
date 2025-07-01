@@ -2,7 +2,6 @@ name: Backend CI          # 워크플로 이름
 
 on:                       # 언제 실행?
   pull_request:           # PR 올릴 때
-    paths: [ 'backend/**' ]
     branches: [ main ]
 
 jobs:
