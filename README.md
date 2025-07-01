@@ -14,8 +14,9 @@
 
 3. JDK 21 설치 및 환경변수 설정
 
-4. pnpm 설치
-    - 프로젝트에서 pnpm을 사용하는 경우, 다음 명령어로 글로벌 설치 필요:
+4. pnpm 설치 (MapBox 사용시 필요)
+    - cd frontend
+    - pnpm을 사용하는 경우, 다음 명령어로 글로벌 설치 필요:
     npm install -g pnpm
     - 설치 후 의존성 설치:
     pnpm install
