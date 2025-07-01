@@ -1,38 +1,42 @@
-name: Backend CI          # 워크플로 이름
+name: Backend CI        # 워크플로 이름
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main ]  # main 으로 향하는 PR에서만 실행
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
+
+    # 모든 run 명령의 기본 작업 폴더를 backend 로 고정
     defaults:
-      run: { working-directory: backend }
+      run:
+        working-directory: backend
 
     steps:
+      # 1) 코드 체크아웃
       - uses: actions/checkout@v4
+
+      # 2) JDK 21 설치
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: gradle
-    
-      - name: Make gradlew executable
-        run: chmod +x gradlew
 
-      # ──────────── (1) build → bootJar 로 교체 ────────────
-      # 기존:  - run: ./gradlew clean build --no-daemon
+      # 3) gradlew 권한 부여 + bootJar 빌드
       - name: Build with Gradle
-        run: ./gradlew clean bootJar --no-daemon
+        run: |
+          chmod +x gradlew                          # 실행 권한 부여
+          ./gradlew clean bootJar --no-daemon       # 실행 가능한 Boot JAR 생성
 
-      # ──────────── (2) Health-check 스크립트 수정 ────────────
+      # 4) /actuator/health 헬스 체크
       - name: Health check
         run: |
-          # plain.jar(실행 불가) 제외하고 boot JAR만 잡는다
+          # plain.jar 제외하고 boot JAR만 선택
           JAR=$(ls build/libs/*SNAPSHOT.jar | grep -v plain | head -n1)
           java -jar "$JAR" --server.port=8080 &
           PID=$!
-          sleep 30                       # 기동 대기 시간 ↑
+          sleep 30                                  # 기동 대기
           curl -f http://localhost:8080/actuator/health
           kill $PID
