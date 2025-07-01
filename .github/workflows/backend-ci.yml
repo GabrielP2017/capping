@@ -1,7 +1,8 @@
 name: backend-ci
 on:
   pull_request:
-    paths: ['backend/**']
+    branches:
+        - '**'
 
 jobs:
   build-test:
