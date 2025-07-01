@@ -1,12 +1,7 @@
 name: Backend CI          # 워크플로 이름
 
-<<<<<<< HEAD
-on:                       # 언제 실행?
-  pull_request:           # PR 올릴 때
-=======
 on:
   pull_request:
->>>>>>> origin/main
     branches: [ main ]
 
 jobs:
@@ -23,18 +18,17 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      # ──────────── (1) build → bootJar 로 교체 ────────────
-      # 기존:  - run: ./gradlew clean build --no-daemon
+      # (1) build → bootJar 로 교체
       - name: Build with Gradle
         run: ./gradlew clean bootJar --no-daemon
 
-      # ──────────── (2) Health-check 스크립트 수정 ────────────
+      # (2) Health-check 스크립트 수정
       - name: Health check
         run: |
-          # plain.jar(실행 불가) 제외하고 boot JAR만 잡는다
           JAR=$(ls build/libs/*SNAPSHOT.jar | grep -v plain | head -n1)
           java -jar "$JAR" --server.port=8080 &
           PID=$!
-          sleep 30                       # 기동 대기 시간 ↑
+          sleep 30
           curl -f http://localhost:8080/actuator/health
           kill $PID
+        working-directory: backend
