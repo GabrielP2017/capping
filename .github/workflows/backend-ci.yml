@@ -17,6 +17,9 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: gradle
+    
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       # ──────────── (1) build → bootJar 로 교체 ────────────
       # 기존:  - run: ./gradlew clean build --no-daemon
