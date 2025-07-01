@@ -1,18 +1,24 @@
 name: backend-ci
+
 on:
   pull_request:
     branches:
-        - '**'
+      - '**'
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x backend/gradlew
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
+
       - name: Gradle test
         working-directory: backend
         run: ./gradlew --no-daemon test
@@ -22,13 +28,19 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@v4
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x backend/gradlew
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
+
       - name: Build JAR
         working-directory: backend
         run: ./gradlew --no-daemon bootJar
+
       - name: Docker build
         working-directory: backend
         run: docker build -t campintel-backend:ci .
