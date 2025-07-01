@@ -1,6 +1,3 @@
 **/.gradle
 .git
-
-# build는 무시하되, libs 안의 jar 파일은 포함
-!backend/build/libs/*.jar
-**/build
+!build/libs/
