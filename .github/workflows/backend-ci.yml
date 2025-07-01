@@ -41,6 +41,10 @@ jobs:
         working-directory: backend
         run: ./gradlew --no-daemon bootJar
 
+      - name: Check JAR file
+        working-directory: backend
+        run: ls -al build/libs
+
       - name: Docker build
         working-directory: backend
         run: docker build -t campintel-backend:ci .
