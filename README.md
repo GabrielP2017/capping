@@ -21,6 +21,11 @@
     - 설치 후 의존성 설치:
     pnpm install
 
+* .env 파일 디코에 올리겠음
+
+
 * ⚠️ gradlew 실행 권한 문제  
     - 위 실행 권한 부여 후에도 가끔 권한이 사라지는 문제가 있음 (Windows 문제)  
     - 그럴 경우 다시 터미널에서 git update-index --chmod=+x backend/gradlew 명령어 입력. (GitBash)
+
+* ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
