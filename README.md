@@ -7,7 +7,7 @@
 2. gradlew 실행 권한 부여
     - Git에서는 실행 권한이 기본으로 공유되지 않음
     - 실행 권한 없으면 CI에서 `./gradlew` 실행 시 오류 발생
-    - 아래 명령어로 권한 부여 후 커밋(GitBash 터미널로 실행):
+    - 아래 명령어로 권한 부여 후 커밋(GitBash 터미널로 실행):  
         git update-index --chmod=+x backend/gradlew  
         git commit -m "Fix: add executable permission to gradlew"  
         git push origin <브랜치명>  
