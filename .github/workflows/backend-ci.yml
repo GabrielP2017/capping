@@ -23,7 +23,7 @@ jobs:
           --health-cmd="pg_isready -U user"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5               # 헬스체크 통과 후에 테스트가 시작됨
+          --health-retries=5
 
     steps:
       - uses: actions/checkout@v4
