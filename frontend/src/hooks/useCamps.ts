@@ -9,7 +9,6 @@ export const useCamps = () =>
       const res = await axios.get('/api/campsites', {
         params: { page: 0, size: 3000 },
       });
-      console.log('🚚 camps raw', res);
       return res.data.content as CampSite[];
     },
   });

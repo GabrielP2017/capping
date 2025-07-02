@@ -36,10 +36,10 @@ export default function Map({ onSelect }: Props) {
 
     camps!.forEach((c) => {
       const el = document.createElement('div');
-      el.className = 'w-2.5 h-2.5 bg-green-600 rounded-full ring-2 ring-white hover:scale-125 transition';
+      el.className = 'marker w-2.5 h-2.5 bg-green-600 rounded-full ring-2 ring-white hover:scale-125 transition';
       el.addEventListener('click', () => onSelect(c));
 
-      new mapboxgl.Marker(el)
+      new mapboxgl.Marker({ element: el, anchor: 'center' })
         .setLngLat([c.lon, c.lat])
         .addTo(mapRef.current!);
     });

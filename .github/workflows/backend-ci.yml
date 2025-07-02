@@ -21,7 +21,7 @@ jobs:
 
       - name: Gradle test
         working-directory: backend
-        run: ./gradlew --no-daemon test
+        run: ./gradlew --no-daemon test -Dspring.profiles.active=test
 
   docker-build:
     runs-on: ubuntu-latest

@@ -8,14 +8,3 @@ html, body, #root, #map {
   margin: 0;
 }
 
-.marker {
-  width: 8px;          /*  w-2.5   */
-  height: 8px;         /*  h-2.5   */
-  background: #16a34a; /*  bg-green-600 */
-  border-radius: 9999px;
-  border: 2px solid #ffffff;   /* ring-2 ring-white */
-  transition: transform .15s;
-}
-.marker:hover {
-  transform: scale(1.25);      /* hover:scale-125 */
-}
