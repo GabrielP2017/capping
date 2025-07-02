@@ -1,21 +1,20 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",      // ← js·ts·jsx·tsx 모두 스캔
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
   ],
-    safelist: [
-    "w-2.5",
-    "h-2.5",
-    "bg-green-600",
-    "rounded-full",
-    "ring-2",
-    "ring-white",
-    "hover:scale-125",
-    "transition",
+
+  // 👇 런타임 문자열로 등장하는 클래스를 JIT가 날려버리지 않도록 보존
+  safelist: [
+    'bg-green-600',
+    'ring-2',
+    'ring-white',
+    'hover:scale-125',
+
+    // ② 가변 픽셀값 패턴은 정규식으로 한 번에
+    {
+      pattern: /(size|w|h)-\[\d+px\]/,   // size-[10px] · w-[10px] · h-[…] 다 잡힘
+    },
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
 };

@@ -1,35 +1,33 @@
-import { Dialog } from '@headlessui/react';
 import type { CampSite } from './types';
 
 interface Props {
-  camp: CampSite;
-  close: () => void;
+  camp: CampSite;          // 이미 있음
+  onClose: () => void;     // ★ 추가 (이름 맞추기)
 }
 
-export default function CampModal({ camp, close }: Props) {
+/* 모달창 위치나 css는 나중에 의논해서 */
+export default function CampModal({ camp, onClose }: Props) {
   return (
-    <Dialog
-      open
-      onClose={close}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
-    >
-      <Dialog.Panel className="w-80 rounded-2xl bg-white p-6 shadow-xl">
-        <Dialog.Title className="text-xl font-bold">{camp.name}</Dialog.Title>
-        <p className="mt-1 text-sm text-gray-600">{camp.address}</p>
-        {camp.phone && (
-          <p className="mt-1 text-sm text-gray-600">☎ {camp.phone}</p>
-        )}
-
-        {/* ---- Dev B 날씨 컴포넌트 자리 ---- */}
-        {/* <WeatherNow campId={camp.id} /> */}
+    <>
+      <div
+        className="fixed inset-0 bg-[#00000066] z-40"
+        onClick={onClose}
+      />
+      <div
+        className="fixed inset-x-0 top-1/4 mx-auto w-96
+                   bg-[#ffffff] rounded-lg p-6 shadow-xl z-50"
+      >
+        <h2 className="text-xl font-semibold mb-2">{camp.name}</h2>
+        <p className="text-sm text-gray-600 mb-4">{camp.address}</p>
 
         <button
-          onClick={close}
-          className="mt-4 w-full rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
+          className="mt-4 px-4 py-2 rounded modal-btn
+                     bg-[#16a34a] hover:bg-[#15803d] text-white"
+          onClick={onClose}
         >
           닫기
         </button>
-      </Dialog.Panel>
-    </Dialog>
+      </div>
+    </>
   );
 }

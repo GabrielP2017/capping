@@ -2,9 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root, #map {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-}
-
+html,body,#root,#map { height:100%; margin:0 }
