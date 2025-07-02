@@ -1,9 +1,15 @@
 spring:
+  profiles: test
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/testdb
-    username: postgres
-    password: camp
+    # H2 ??? DB ??, PostgreSQL ??? ??
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
   flyway:
-    url: jdbc:postgresql://localhost:5432/testdb
-    user: user
-    password: pass
+    # Flyway? H2? ??????
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    user: sa
+    password:
