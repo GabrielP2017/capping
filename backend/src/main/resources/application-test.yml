@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: postgres
+    password: camp
+  flyway:
+    url: jdbc:postgresql://localhost:5432/testdb
+    user: user
+    password: pass
