@@ -34,7 +34,9 @@ dependencies {
     testImplementation 'com.h2database:h2:2.2.224'   // 최신 버전 권장
     // 애플리케이션 런타임용 Postgres
     runtimeOnly 'org.postgresql:postgresql:42.7.3'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // ---- Testcontainers 추가 ----
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.7'
+    testImplementation 'org.testcontainers:postgresql:1.19.7'
 }
 
 tasks.named('test') {
