@@ -1,9 +1,7 @@
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useCamps } from './hooks/useCamps';
 import type { CampSite } from './types';
-import "./index.css";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
