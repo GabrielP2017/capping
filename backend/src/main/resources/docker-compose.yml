@@ -1,0 +1,26 @@
+services:
+  db:
+    image: timescale/timescaledb-ha:pg16-all          # ✅ PG16 + Timescale + PostGIS
+    container_name: campdb
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER:     postgres       # 슈퍼유저
+      POSTGRES_PASSWORD: camp       # 필드 비워두면 안 됨
+      POSTGRES_DB:       campdb         # 기본 DB 이름
+
+    ports:
+      - "5432:5432"                     # 필요하면 왼쪽 값(호스트) 바꿔서 충돌 회피
+
+    volumes:
+      - dbdata:/var/lib/postgresql/data # 영구 데이터 저장
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      # ↑ 확장·테이블·인덱스 한방에 넣은 init 스크립트(옵션)
+
+    healthcheck:                        # 컨테이너 헬스체크(기동 완료 여부 판단)
+      test: ["CMD-SHELL", "pg_isready -U postgres -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  dbdata:
