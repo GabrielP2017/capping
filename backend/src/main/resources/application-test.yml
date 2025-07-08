@@ -1,15 +1,7 @@
 spring:
   datasource:
-    # H2 ??? DB, PostgreSQL ?? ??
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
   flyway:
-    # Flyway? H2? ??????
-    enabled: true
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    locations: classpath:db/migration,classpath:db/h2
-    user: sa
-    password:
+    baseline-on-migrate: true
+logging:
+  level:
+    org.flywaydb: INFO     # 디버깅용
