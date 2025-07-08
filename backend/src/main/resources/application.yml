@@ -7,3 +7,14 @@ spring:
     url: jdbc:postgresql://localhost:5432/campdb
     username: postgres
     password: camp
+
+# ───────── Actuator 노출 설정 ─────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - beans
+          - env

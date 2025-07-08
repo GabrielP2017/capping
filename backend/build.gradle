@@ -37,6 +37,8 @@ dependencies {
     // ---- Testcontainers 추가 ----
     testImplementation 'org.testcontainers:junit-jupiter:1.19.7'
     testImplementation 'org.testcontainers:postgresql:1.19.7'
+    // WebFlux 스타터
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
