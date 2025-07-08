@@ -1,13 +1,17 @@
 package org.example.campingweather;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.Assertions;
+import org.example.campingweather.repository.CampSiteRepository;
 import org.example.campingweather.wildfire.WildfireApiClient;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -15,72 +19,86 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import reactor.test.StepVerifier;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.MockResponse;
 import org.testcontainers.utility.DockerImageName;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @Testcontainers
 @SpringBootTest
-@ActiveProfiles("test")   // application-test.yml을 사용하도록 지정
+@ActiveProfiles("test")
 class CampingWeatherApplicationTests {
 
-    static DockerImageName TS_IMAGE =
+    /* ---------------- Testcontainers: Timescale + PostGIS ---------------- */
+    static final DockerImageName TS_IMAGE =
             DockerImageName.parse("timescale/timescaledb-ha:pg16-all")
                     .asCompatibleSubstituteFor("postgres");
 
-    // 1) 컨테이너 정의 (포트 충돌 우회 예시)
     @Container
-    static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>(TS_IMAGE)
-            .withDatabaseName("campdb")
-            .withUsername("postgres")
-            .withPassword("camp")
-            .withReuse(false);
+    static final PostgreSQLContainer<?> pg =
+            new PostgreSQLContainer<>(TS_IMAGE)
+                    .withDatabaseName("campdb")
+                    .withUsername("postgres")
+                    .withPassword("camp");
 
+    /* ---------- Datasource & Flyway 를 컨테이너 접속 정보로 덮어쓰기 ---------- */
     @DynamicPropertySource
     static void dbProps(DynamicPropertyRegistry r) {
         r.add("spring.datasource.url",      pg::getJdbcUrl);
         r.add("spring.datasource.username", pg::getUsername);
         r.add("spring.datasource.password", pg::getPassword);
-        r.add("spring.flyway.url",          pg::getJdbcUrl);      // ★ 추가
-        r.add("spring.flyway.user",         pg::getUsername);
-        r.add("spring.flyway.password",     pg::getPassword);
+
+        r.add("spring.flyway.url",      pg::getJdbcUrl);
+        r.add("spring.flyway.user",     pg::getUsername);
+        r.add("spring.flyway.password", pg::getPassword);
     }
 
-
-    // 3) Docker 확인 안 되면 테스트 Skip
+    /* ---------------- Docker 데몬 없으면 테스트 전체 Skip ---------------- */
     static {
-        boolean dockerUp = DockerClientFactory.instance().isDockerAvailable();
-        Assumptions.assumeTrue(dockerUp, "Docker daemon unavailable → tests skipped");
+        Assumptions.assumeTrue(
+                DockerClientFactory.instance().isDockerAvailable(),
+                "Docker daemon unavailable → tests skipped");
     }
 
-    @Test
-    void contextLoads() {
-    }
-
-    /** ① Mock WebServer */
+    /* ---------------- 외부 산림청 API 를 MockWebServer 로 대체 ------------- */
     static MockWebServer mockWebServer;
 
-    /** ② 테스트 대상 Bean */
-    @Autowired
-    WildfireApiClient client;
-
-    /** ③ 애플리케이션 프로퍼티를 mock URL로 덮어쓰기 */
     @DynamicPropertySource
-    static void overrideProps(DynamicPropertyRegistry reg) throws Exception {
+    static void overrideApiUrl(DynamicPropertyRegistry reg) throws Exception {
         mockWebServer = new MockWebServer();
-        mockWebServer.start(0);                                   // 랜덤 포트
+        mockWebServer.start();
         reg.add("WILDFIRE_API_URL", () -> mockWebServer.url("/").toString());
     }
 
     @AfterAll
     static void shutdown() throws Exception {
-        mockWebServer.shutdown();
+        if (mockWebServer != null) mockWebServer.shutdown();
     }
+    /* ====== 2) CampSiteRepository를 Mockito 목으로 등록 ===== */
+    @TestConfiguration
+    static class StubConfig {
+        @Bean
+        CampSiteRepository campSiteRepository() {
+            return Mockito.mock(CampSiteRepository.class);
+        }
+        @Bean
+        WildfireApiClient wildfireApiClient() {
+            WildfireApiClient mock = Mockito.mock(WildfireApiClient.class);
+            // 아무 값이나 리턴하도록 기본 스텁
+            Mockito.when(mock.fetchRisk(Mockito.anyString()))
+                    .thenReturn(Mono.empty());
+            return mock;
+        }
+
+    }
+
+    /* ---------------- 실제 Bean 주입 받아 검증 ---------------- */
+    @Autowired WildfireApiClient client;
+
+    @Test
+    void contextLoads() { }
 
     @Test
     void fetchRisk_parsesRiskLevel() throws JsonProcessingException {
-        // ④ Mock 응답 JSON – 위험도 3
         String body = """
             {
               "response": {
@@ -92,13 +110,11 @@ class CampingWeatherApplicationTests {
                   }
                 }
               }
-            }
-            """;
+            }""";
         mockWebServer.enqueue(new MockResponse()
                 .setBody(body)
                 .addHeader("Content-Type", "application/json"));
 
-        // ⑤ 검증
         StepVerifier.create(client.fetchRisk("11110"))
                 .assertNext(dto -> {
                     Assertions.assertThat(dto.getRiskLevel()).isEqualTo(3);
@@ -106,7 +122,5 @@ class CampingWeatherApplicationTests {
                 })
                 .verifyComplete();
     }
-
-
 
 }

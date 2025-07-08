@@ -1,7 +1,7 @@
 spring:
-  datasource:
   flyway:
     baseline-on-migrate: true
+    enabled: true # 테스트가 좆나 안되면 그냥 false
 logging:
   level:
     org.flywaydb: INFO     # 디버깅용
