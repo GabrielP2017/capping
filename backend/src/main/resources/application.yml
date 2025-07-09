@@ -5,3 +5,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/campdb
     username: postgres
     password: camp
+  jpa:
+    hibernate:
+      ddl-auto: validate   # Flyway가 스키마 만들고 JPA는 검증만
