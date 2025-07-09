@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "weather_raw")
+@Table(name = "weather_grid_raw")
 @Getter @Setter @NoArgsConstructor
 @AllArgsConstructor @Builder
 public class WeatherRaw {
