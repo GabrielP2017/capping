@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "weather_grid_raw")
+@Table(name = "weather_raw")
 @Getter @Setter @NoArgsConstructor
 @AllArgsConstructor @Builder
 public class WeatherRaw {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "camp_id", nullable = false)
+    private Long campId;
 
     private String baseDate;   // 예: 20250709
     private String baseTime;   // 예: 0200

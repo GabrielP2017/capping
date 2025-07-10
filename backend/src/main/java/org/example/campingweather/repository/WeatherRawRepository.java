@@ -1,25 +1,17 @@
 package org.example.campingweather.repository;
 
 import org.example.campingweather.domain.WeatherRaw;
-import org.example.campingweather.dto.WeatherLatestDto;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface WeatherRawRepository extends CrudRepository<WeatherRaw, Long> {
-
-    @Query("""
-        SELECT new org.example.campingweather.dto.WeatherLatestDto(
-            w.nx,
-            w.ny,
-            w.category,
-            w.fcstDate,
-            w.fcstTime,
-            w.fcstValue
-        )
+    @org.springframework.data.jpa.repository.Query("""
+        SELECT new map(w.category as cat, w.fcstValue as val)
         FROM WeatherRaw w
-        WHERE w.nx = :nx AND w.ny = :ny
+        WHERE w.campId = :campId
+          AND w.category IN ('TMP','POP')
         ORDER BY w.baseDate DESC, w.baseTime DESC
     """)
-    WeatherLatestDto findTopByNxAndNyOrderByBaseDateDescBaseTimeDesc(
-            Double nx, Double ny);
+    java.util.List<java.util.Map<String,String>>
+        findLatest(@org.springframework.data.repository.query.Param("campId") long campId,
+                   org.springframework.data.domain.Pageable page);
 }
