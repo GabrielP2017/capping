@@ -1,3 +1,10 @@
+# KMA WebClient 가 사용할 Base URL 설정
+kma:
+  base:
+    url: https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0
+  service:
+    key: 7mpbTUT6hvriBlQ3N2SaGi1/B/uq+ermnijDRS7eXnO9jfPFzrPyT9AKhu7LSk+mCe+QsT9bOjQXfCivwhfFbQ==
+
 management:
   endpoints:
     web:
@@ -9,5 +16,8 @@ management:
           - env
 
 spring:
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
   config:
     import: "optional:file:.env[.properties]"

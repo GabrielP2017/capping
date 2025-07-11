@@ -4,8 +4,12 @@ import org.example.campingweather.domain.CampSite;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
+import java.util.List;
 
 public interface CampSiteRepository extends JpaRepository<CampSite, Long> {
+
+    @Query("SELECT c.id FROM CampSite c")
+    List<Long> findAllCampIds();
 
     /* 전체 목록은 JpaRepository 기본 findAll(Pageable) 사용 */
 
