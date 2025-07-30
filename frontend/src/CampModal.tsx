@@ -1,33 +1,56 @@
+import { useEffect, useState } from 'react';
+import { RiskBadge } from './RiskBadge';
 import type { CampSite } from './types';
 
 interface Props {
-  camp: CampSite;          // 이미 있음
-  onClose: () => void;     // ★ 추가 (이름 맞추기)
+  camp: CampSite;
+  riskLevel: 0 | 1 | 2 | 3 | 4;
+  onClose: () => void;
 }
 
-/* 모달창 위치나 css는 나중에 의논해서 */
-export default function CampModal({ camp, onClose }: Props) {
+/** 좌측 슬라이딩 패널 (네이버 지도 스타일) */
+export default function CampModal({ camp, riskLevel, onClose }: Props) {
+  const [enter, setEnter] = useState(false);
+  useEffect(() => setEnter(true), []);
+
   return (
     <>
+      {/* 어두운 오버레이 ― 클릭 시 패널 닫힘 */}
       <div
-        className="fixed inset-0 bg-[#00000066] z-40"
+        className="fixed inset-0 bg-black/20 z-40"
         onClick={onClose}
       />
-      <div
-        className="fixed inset-x-0 top-1/4 mx-auto w-96
-                   bg-[#ffffff] rounded-lg p-6 shadow-xl z-50"
-      >
-        <h2 className="text-xl font-semibold mb-2">{camp.name}</h2>
-        <p className="text-sm text-gray-600 mb-4">{camp.address}</p>
 
-        <button
-          className="mt-4 px-4 py-2 rounded modal-btn
-                     bg-[#16a34a] hover:bg-[#15803d] text-white"
-          onClick={onClose}
-        >
-          닫기
-        </button>
-      </div>
+      {/* ----- 슬라이딩 패널 ----- */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-80 md:w-96
+                    bg-white shadow-xl p-6 overflow-y-auto
+                    transform transition-transform duration-300
+                    ${enter ? 'translate-x-0' : '-translate-x-full'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <header className="flex items-start justify-between mb-4">
+          <h2 className="flex items-center gap-2 text-xl font-semibold">
+            {camp.name}
+            <RiskBadge level={riskLevel} />
+          </h2>
+
+          {/* Tailwind → HEX 직접 지정 */}
+          <button
+            aria-label="닫기"
+            className="text-[#6B7280] hover:text-[#1F2937]"
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </header>
+
+        <p className="text-sm" style={{ color: '#4B5563' /* gray-600 */ }}>
+          {camp.address}
+        </p>
+
+        {/* 확장 영역 (전화번호·날씨 등) */}
+      </aside>
     </>
   );
 }

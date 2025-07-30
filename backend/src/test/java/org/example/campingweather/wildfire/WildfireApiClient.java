@@ -12,7 +12,7 @@ public class WildfireApiClient {
     private final WebClient webClient;
 
     public WildfireApiClient(
-            @Value("${WILDFIRE_API_URL}") String baseUrl,
+            @Value("${wildfire.api.base-url}") String baseUrl,
             WebClient.Builder builder            // <-- 주입
     ) {
         this.webClient = builder.baseUrl(baseUrl).build();

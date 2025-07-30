@@ -10,30 +10,38 @@ CREATE TABLE IF NOT EXISTS camp_sites (
     lat          NUMERIC(9,6)   NOT NULL,   -- 위도
     lon          NUMERIC(9,6)   NOT NULL,   -- 경도
     phone        TEXT,
+    region_code  VARCHAR(10),
     last_updated TIMESTAMP      DEFAULT NOW()
-
 );
 
--- 산불 위험 원본 테이블
-CREATE TABLE IF NOT EXISTS wildfire_risks (
-  id          SERIAL        NOT NULL,
-  region_code TEXT          NOT NULL,
-  risk_level  INT           NOT NULL CHECK (risk_level BETWEEN 0 AND 4),
-  fetched_at  TIMESTAMPTZ   NOT NULL,
-  lat         NUMERIC(9,6)  NOT NULL,
-  lon         NUMERIC(9,6)  NOT NULL,
-  PRIMARY KEY (fetched_at, id)
-);
-
--- ③ 이 부분이 **하이퍼테이블 전환** 핵심
-SELECT create_hypertable('wildfire_risks','fetched_at', if_not_exists => TRUE);
-
+ALTER TABLE camp_sites
+    ADD CONSTRAINT uq_camp_lat_lon UNIQUE (lat, lon);
 
 -- 경도·위도를 하나의 geometry로 묶어 GiST 인덱스 생성
 CREATE INDEX IF NOT EXISTS camp_sites_geo_idx
     ON camp_sites
         USING GIST ( ST_SetSRID( ST_MakePoint(lon, lat), 4326 ) );
 
+-- 산불 위험 원본 테이블
+CREATE TABLE wildfire_risks (
+    id          BIGSERIAL,
+    region_code TEXT        NOT NULL,
+    risk_level  INT         NOT NULL CHECK (risk_level BETWEEN 1 AND 4),
+    fetched_at  TIMESTAMPTZ NOT NULL
+);
+
+-- 3) 하이퍼테이블 전환 (이때는 PK 제약이 없음)
+SELECT create_hypertable('wildfire_risks','fetched_at', if_not_exists => TRUE);
+
 -- ④ 산불 인덱스
-CREATE INDEX IF NOT EXISTS idx_wildfire_time_desc
-    ON wildfire_risks (fetched_at DESC);
+CREATE INDEX idx_wildfire_time_desc
+    ON wildfire_risks(fetched_at DESC);
+
+-- --------------------- 중복 데이터 방지 ---------------------
+-- (순서 상관없이 hypertable 만든 뒤 실행해도 됨)
+CREATE UNIQUE INDEX IF NOT EXISTS uq_wildfire_region_time
+    ON wildfire_risks(region_code, fetched_at DESC);
+
+-- 30일 지나면 청크(drop_chunk) 자동 제거
+SELECT add_retention_policy('wildfire_risks',
+                            INTERVAL '30 days');

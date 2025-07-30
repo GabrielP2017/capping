@@ -5,4 +5,5 @@ export interface CampSite {
   lat: number;
   lon: number;
   phone?: string;
+  regionCode:string;
 }

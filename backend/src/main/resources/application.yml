@@ -1,10 +1,24 @@
 spring:
+  config:
+    import:
+      - optional:classpath:.env.properties
   flyway:
     baseline-on-migrate: true
-  datasource:
-    url: jdbc:postgresql://localhost:5432/campdb
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/campdb
     username: postgres
     password: camp
-  jpa:
-    hibernate:
-      ddl-auto: validate   # Flyway가 스키마 만들고 JPA는 검증만
+  jackson:
+      accept-empty-string-as-null: true
+
+wildfire:
+  api:
+    base-url: ${WILDFIRE_API_BASE}
+    service-key: ${WILDFIRE_SERVICE_KEY}
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    com.example.campingweather: INFO
+

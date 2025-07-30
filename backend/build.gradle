@@ -21,8 +21,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation "org.springframework.boot:spring-boot-starter-data-r2dbc"
+    implementation "org.postgresql:r2dbc-postgresql"
     implementation 'org.flywaydb:flyway-core'      // 이게 있어야 자동 마이그레이션
     implementation 'org.flywaydb:flyway-database-postgresql:11.10.0' // ← 이것 추가
     implementation 'com.opencsv:opencsv:5.9'
