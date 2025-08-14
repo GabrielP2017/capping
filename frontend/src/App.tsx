@@ -1,17 +1,23 @@
-// src/App.tsx  (예시)
 import { useState } from 'react';
 import Map from './Map';
 import CampModal from './CampModal';
 import type { CampSite } from './types';
 
 export default function App() {
-  const [selected, setSelected] = useState<CampSite|null>(null);
+  // 모달에서 사용할 선택 상태
+  const [selected, setSelected] =
+    useState<{ camp: CampSite; risk: 0 | 1 | 2 | 3 | 4 } | null>(null);
+
   return (
-    <>
-      <Map onSelect={setSelected}/>
-      {selected && (console.log('modal for', selected.name),
-        <CampModal camp={selected} onClose={() => setSelected(null)}/>
+    <div className="w-screen h-screen">
+      <Map onSelect={(camp, risk) => setSelected({ camp, risk })} />
+      {selected && (
+        <CampModal
+          camp={selected.camp}
+          riskLevel={selected.risk}
+          onClose={() => setSelected(null)}
+        />
       )}
-    </>
+    </div>
   );
 }
